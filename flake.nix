@@ -73,6 +73,7 @@
 
           dotenv.enable = true;
 
+          # FIXME: Check if phx_new OR livebook exists, otherwise install them
           enterShell = ''
             export PRE_COMMIT_HOME=$PWD/.cache/pre-commit
             export MIX_HOME=$PWD/.mix
