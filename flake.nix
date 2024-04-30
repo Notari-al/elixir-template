@@ -73,7 +73,6 @@
 
           dotenv.enable = true;
 
-          # FIXME: Check if phx_new OR livebook exists, otherwise install them
           enterShell = ''
             export PRE_COMMIT_HOME=$PWD/.cache/pre-commit
             export MIX_HOME=$PWD/.mix
@@ -84,8 +83,11 @@
             mix local.hex --force --if-missing
             mix local.rebar --force --if-missing
 
-            if [ ! -d ".mix/archives" ]; then
+            if [ ! "$(find -maxdepth 3 -type d -name "phx_new*")" ]; then
               mix archive.install --force hex phx_new
+            fi
+
+            if [ ! -f ".mix/escripts/livebook" ]; then
               mix escript.install --force hex livebook
             fi
           '';
