@@ -69,6 +69,8 @@
         # system.
 
         devenv.shells.default = {
+          devcontainer.enable = true;
+
           dotenv.enable = true;
 
           enterShell = ''
