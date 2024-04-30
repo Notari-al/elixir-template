@@ -21,7 +21,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixpkgs-lib.url = "github:nixos/nixpkgs/nixpkgs-unstable?dir=lib";
 
-    flake-compat.url = github:edolstra/flake-compat;
+    flake-compat.url = "github:edolstra/flake-compat";
     flake-compat.flake = false;
 
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -71,22 +71,25 @@
         devenv.shells.default = {
           dotenv.enable = true;
 
-          # FIXME: mix, hex, and cache locations
-          # enterShell = ''
-          #   mix local.hex --force --if-missing
-          #   mix local.rebar --force --if-missing
-          #   export PATH="$HOME/.mix/escripts:$PATH"
+          enterShell = ''
+            export PRE_COMMIT_HOME=$PWD/.cache/pre-commit
+            export MIX_HOME=$PWD/.mix
+            export HEX_HOME=$PWD/.hex
+            export REBAR_CACHE_DIR=$PWD/.cache/rebar3
+            export PATH=$PWD/.mix/escripts:$PATH
 
-          #   mix archive.install --force hex phx_new
-          #   mix escript.install --force hex livebook
-          # '';
+            mix local.hex --force --if-missing
+            mix local.rebar --force --if-missing
+
+            if [ ! -d ".mix/archives" ]; then
+              mix archive.install --force hex phx_new
+              mix escript.install --force hex livebook
+            fi
+          '';
 
           languages = {
             elixir.enable = true;
-
-            javascript.enable = true;
-            javascript.npm.enable = true;
-            javascript.npm.install.enable = true;
+            erlang.enable = true;
 
             nix.enable = true;
           };
@@ -102,7 +105,6 @@
 
           services = {
             postgres = {
-              # FIXME: $PGDATA location
               enable = true;
               initialScript = ''
                 CREATE ROLE postgres WITH LOGIN PASSWORD 'postgres' SUPERUSER;

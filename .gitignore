@@ -1,3 +1,7 @@
+.cache
+.db
 .devenv
 .direnv
+.hex
+.mix
 .pre-commit-config.yaml
