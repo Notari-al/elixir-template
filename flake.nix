@@ -1,5 +1,5 @@
 {
-  description = "DockYard Academy";
+  description = "Elixir Template Project";
 
   nixConfig = {
     extra-substituters = [
