@@ -71,6 +71,7 @@
         devenv.shells.default = {
           dotenv.enable = true;
 
+          # FIXME: mix, hex, and cache locations
           # enterShell = ''
           #   mix local.hex --force --if-missing
           #   mix local.rebar --force --if-missing
@@ -101,6 +102,7 @@
 
           services = {
             postgres = {
+              # FIXME: $PGDATA location
               enable = true;
               initialScript = ''
                 CREATE ROLE postgres WITH LOGIN PASSWORD 'postgres' SUPERUSER;
