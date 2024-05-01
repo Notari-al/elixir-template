@@ -18,39 +18,31 @@
   };
 
   inputs = {
+    devenv-root.url = "file+file:///dev/null";
+    devenv-root.flake = false;
+
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixpkgs-lib.url = "github:nixos/nixpkgs/nixpkgs-unstable?dir=lib";
-
-    flake-compat.url = "github:edolstra/flake-compat";
-    flake-compat.flake = false;
 
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs-lib";
 
-    flake-root.url = "github:srid/flake-root";
-
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
-    pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
-    pre-commit-hooks.inputs.flake-compat.follows = "flake-compat";
-
     devenv.url = "github:cachix/devenv";
     devenv.inputs.nixpkgs.follows = "nixpkgs";
-    devenv.inputs.flake-compat.follows = "flake-compat";
-    devenv.inputs.pre-commit-hooks.follows = "pre-commit-hooks";
   };
 
   outputs = inputs @ {
     flake-parts,
     nixpkgs,
+    devenv-root,
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
         inputs.devenv.flakeModule
-        inputs.flake-root.flakeModule
         inputs.treefmt-nix.flakeModule
       ];
 
@@ -69,7 +61,20 @@
         # module parameters provide easy access to attributes of the same
         # system.
 
+        treefmt = {
+          projectRootFile = "flake.nix";
+          programs = {
+            alejandra.enable = true;
+            mix-format.enable = true;
+          };
+        };
+
         devenv.shells.default = {
+          devenv.root = let
+            devenvRootFileContent = builtins.readFile devenv-root.outPath;
+          in
+            pkgs.lib.mkIf (devenvRootFileContent != "") devenvRootFileContent;
+
           devcontainer.enable = true;
 
           dotenv.enable = true;
@@ -125,13 +130,6 @@
               mix escript.install --force hex livebook
             fi
           '';
-        };
-
-        treefmt = {
-          inherit (config.flake-root) projectRootFile;
-          programs = {
-            alejandra.enable = true;
-          };
         };
       };
     };
