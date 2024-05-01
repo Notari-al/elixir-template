@@ -79,6 +79,7 @@
             export HEX_HOME=$PWD/.hex
             export REBAR_CACHE_DIR=$PWD/.cache/rebar3
             export PATH=$PWD/.mix/escripts:$PATH
+            export LIVEBOOK_HOME=$PWD
 
             mix local.hex --force --if-missing
             mix local.rebar --force --if-missing
