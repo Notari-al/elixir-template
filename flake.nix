@@ -18,9 +18,6 @@
   };
 
   inputs = {
-    devenv-root.url = "file+file:///dev/null";
-    devenv-root.flake = false;
-
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nixpkgs-lib.url = "github:nixos/nixpkgs/nixpkgs-unstable?dir=lib";
 
@@ -37,7 +34,6 @@
   outputs = inputs @ {
     flake-parts,
     nixpkgs,
-    devenv-root,
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
@@ -70,11 +66,6 @@
         };
 
         devenv.shells.default = {
-          devenv.root = let
-            devenvRootFileContent = builtins.readFile devenv-root.outPath;
-          in
-            pkgs.lib.mkIf (devenvRootFileContent != "") devenvRootFileContent;
-
           dotenv.enable = true;
 
           languages = {
