@@ -60,6 +60,7 @@
         config,
         self',
         inputs',
+        lib,
         pkgs,
         system,
         ...
@@ -72,6 +73,38 @@
           devcontainer.enable = true;
 
           dotenv.enable = true;
+
+          languages = {
+            elixir.enable = true;
+            erlang.enable = true;
+
+            nix.enable = true;
+          };
+
+          packages =
+            [
+              pkgs.git
+            ]
+            ++ lib.optionals pkgs.stdenv.isLinux [pkgs.inotify-tools];
+
+          pre-commit.hooks = {
+            treefmt.enable = true;
+            treefmt.package = config.treefmt.build.wrapper;
+          };
+
+          processes = {
+            # phoenix.exec = "mix phx.server";
+            # livebook.exec = "livebook server";
+          };
+
+          services = {
+            postgres = {
+              enable = true;
+              initialScript = ''
+                CREATE ROLE postgres WITH LOGIN PASSWORD 'postgres' SUPERUSER;
+              '';
+            };
+          };
 
           enterShell = ''
             export PRE_COMMIT_HOME=$PWD/.cache/pre-commit
@@ -92,31 +125,6 @@
               mix escript.install --force hex livebook
             fi
           '';
-
-          languages = {
-            elixir.enable = true;
-            erlang.enable = true;
-
-            nix.enable = true;
-          };
-
-          packages = [
-            pkgs.inotify-tools
-          ];
-
-          pre-commit.hooks = {
-            treefmt.enable = true;
-            treefmt.package = config.treefmt.build.wrapper;
-          };
-
-          services = {
-            postgres = {
-              enable = true;
-              initialScript = ''
-                CREATE ROLE postgres WITH LOGIN PASSWORD 'postgres' SUPERUSER;
-              '';
-            };
-          };
         };
 
         treefmt = {
