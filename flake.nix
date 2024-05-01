@@ -75,8 +75,6 @@
           in
             pkgs.lib.mkIf (devenvRootFileContent != "") devenvRootFileContent;
 
-          devcontainer.enable = true;
-
           dotenv.enable = true;
 
           languages = {
